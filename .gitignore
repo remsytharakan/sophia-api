@@ -4,4 +4,6 @@ node_modules
 *.env
 shared/sharder/environment/*.env
 
-dist/
+dist/.env
+*.env
+shared/sharder/environment/*.env
