@@ -1,0 +1,73 @@
+#!/usr/bin/env node
+
+const debug = require('debug')('express:www');
+const http = require('http');
+const app = require('../app');
+const logger = require('../logger');
+
+/**
+ * Hard-coded configuration (you can change these)
+ */
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+process.env.HTTP_HOST = '0.0.0.0';   // or 'localhost'
+process.env.PORT = '8080';
+process.env.SECRET = 'EduApp2020';
+process.env.MONGODB_URI_LOCAL = 'mongodb://localhost:27017/meantr_sophia_V2';
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+function normalizePort(val) {
+  const port = parseInt(val, 10);
+  if (Number.isNaN(port)) return val;
+  if (port >= 0) return port;
+  return false;
+}
+
+const port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Error handler
+ */
+function onError(error) {
+  if (error.syscall !== 'listen') throw error;
+  const bind = typeof port === 'string' ? `Pipe ${port}` : `Port ${port}`;
+  switch (error.code) {
+    case 'EACCES':
+      logger.error(`${bind} requires elevated privileges`);
+      process.exit(1);
+    case 'EADDRINUSE':
+      logger.error(`${bind} is already in use`);
+      process.exit(1);
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Create HTTP server
+ */
+const server = http.createServer(app);
+
+/**
+ * Listening handler
+ */
+function onListening() {
+  const addr = server.address();
+  const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
+  debug(`Listening on ${bind}`);
+  console.log('Education API Listening on port : ' + addr.port);
+}
+
+process.on('uncaughtException', (err) => {
+  logger.error('Uncaught Exception at: %s - message: %s', err.stack, err.message);
+});
+
+process.on('unhandledRejection', (reason) => {
+  logger.error('Unhandled Rejection at: %s - message: %s', reason.stack, reason.message);
+});
+
+server.listen(port, process.env.HTTP_HOST);
+server.on('error', onError);
+server.on('listening', onListening);
