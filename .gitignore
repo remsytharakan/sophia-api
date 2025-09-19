@@ -7,3 +7,8 @@ shared/sharder/environment/*.env
 dist/.env
 *.env
 shared/sharder/environment/*.env
+.env
+*.env
+shared/sharder/environment/*.env
+__MACOSX/
+.DS_Store
